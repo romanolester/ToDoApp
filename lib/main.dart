@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
     new ToDo("task2", false),
     new ToDo("task3", true)
   ];
-  
+
   bool _value1 = false;
   void _addToDo(String task) {
     if (task.length > 0) {
@@ -68,36 +68,35 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-
   void _onChecked(bool value) => setState(() => _value1 = value);
 
   Widget _buildToDoItem(BuildContext _context, ToDo todo) {
     return new Dismissible(
       key: Key(todo.title),
       onDismissed: (direction) {
-                // Remove the item from our data source.
-                setState(() {
-                  _todoItems.remove(todo);
-                });
+        if (_yesNoDialogBox("Are you sure you want to delete this item?")) {
+          // Remove the item from our data source.
+          setState(() {
+            _todoItems.remove(todo);
 
-                // Then show a snackbar!
-                Scaffold.of(_context)
-                    .showSnackBar(SnackBar(content: Text("Task dismissed")));
-              },
-        background: Container(color: Colors.red),
-        child: Row(
+            // Then show a snackbar!
+            Scaffold.of(_context)
+                .showSnackBar(SnackBar(content: Text("Task dismissed")));
+          });
+        }
+      },
+      background: Container(color: Colors.red),
+      child: Row(
         children: <Widget>[
           Checkbox(
             value: todo.value,
-            onChanged: (bool newValue) => setState(() =>
-              todo.value = newValue
-            ),
+            onChanged: (bool newValue) => setState(() => todo.value = newValue),
             activeColor: Colors.red,
           ),
           Text(todo.title),
         ],
       ),
-    ); 
+    );
   }
 
   Widget _buildToDoList() {
@@ -142,5 +141,31 @@ class _MyHomePageState extends State<MyHomePage> {
             },
           ));
     }));
+  }
+
+  void _yesNoDialogBox(String s) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: new Text(s),
+            content: new Text(s),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("Yes"),
+                onPressed: () {
+
+                  Navigator.of(context).pop();
+                },
+              ),
+              new FlatButton(
+                child: new Text("No"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
   }
 }
